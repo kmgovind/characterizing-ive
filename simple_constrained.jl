@@ -2,6 +2,7 @@ using Plots
 
 using DifferentialEquations
 using Plots
+using ForwardDiff
 
 """
 Environmental Assumptions:
