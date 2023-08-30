@@ -53,7 +53,7 @@ function out = J_ASV(x, dt, t_span, soc_start, soc_end, soc_max, soc_min, hotel,
             x(i) = 0;
         end
         dist(i) = x(i)*3600*dt; % dist traveled during time step in m
-        soc_current = batteryModel(soc_current, soc_max, soc_min, hotel, k_m, x(i), t_span(i), dayOfYear, lat); % update so
+        soc_current = batteryModel(dt, soc, soc_max, soc_min, hotel,k_m, vel, time, dayOfYear, lat); % update so
         soc(i) = soc_current;
     end
 
