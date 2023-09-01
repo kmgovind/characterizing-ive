@@ -6,7 +6,8 @@ min_speed = convvel(0, 'kts', 'm/s');
 
 soc_max = 6.5e3; % 6.5 kWh battery capacity
 soc_min = 0;
-soc_start = soc_max/2; % start with half battery
+% soc_start = soc_max/2; % start with half battery
+soc_start = 4583;
 soc_end = soc_start;
 hotel = 10; % 10 W hotel load
 k_m = 27.2032; % Power draw due to motor running gain
@@ -14,7 +15,7 @@ k_m = 27.2032; % Power draw due to motor running gain
 dayOfYear = 180;
 lat = 35.0; % degrees
 
-k_p = 1; % penalty gain on deviation from desired end soc
+k_p = 100; % penalty gain on deviation from desired end soc
 
 %% Compute velocity trajectory
 dt = 0.1; % in hours
@@ -49,31 +50,39 @@ end
 % Plot computed optimal velocity trajectory
 figure(1);
 plot(xOpt);
+axis([0, Inf, min_speed, max_speed+1]);
+xlabel('Time (hrs)', 'Interpreter', 'latex');
+ylabel('Velocity (m/s)', 'Interpreter', 'latex');
 title('Optimal Velocity Trajectory vs Time', 'Interpreter', 'latex');
+saveas(gcf, 'vel_traj.png');
 
 % Plot SOC vs Time
 figure(2);
 plot(soc);
+axis([0, Inf, 0, 7000]);
+xlabel('Time (hrs)', 'Interpreter', 'latex');
+ylabel('State of Charge (Wh)', 'Interpreter', 'latex');
 title('State of Charge vs Time', 'Interpreter', 'latex');
+saveas(gcf, 'soc_v_time.png');
 
 % Plot P_in vs time (Irradiance * panel area)
 figure(3);
-plot(t_span, max(0,SolarInsolation(dayOfYear, t_span, lat)) * 4);
+plot(t_span, max(0,SolarInsolation(dayOfYear, t_span, lat)*1000) * 1);
 xlabel('Time (hrs). 12 = noon', 'Interpreter', 'latex');
-ylabel('Power Into Boat', 'Interpreter', 'latex');
+ylabel('Power Into Boat (W)', 'Interpreter', 'latex');
 title('Power In vs Time', 'Interpreter', 'latex');
+saveas(gcf, 'pin_v_time.png');
 
 %% Functions
 function out = batteryModel(dt, soc, soc_max, soc_min, hotel,k_m, vel, time, dayOfYear, lat)
-solar_panel_area = 4; % m^2
-p_in = max(0,SolarInsolation(dayOfYear, time, lat)) * solar_panel_area;
+solar_panel_area = 1; % m^2
+p_in = max(0,SolarInsolation(dayOfYear, time, lat)*1000) * solar_panel_area;
 p_out = hotel + k_m * power(vel,3);
 soc_est = (p_in - p_out) * dt;
 soc_est = soc + soc_est ; % power update in Wh
 soc_est = min(soc_est, soc_max); % cap charge at soc_max
 out = soc_est;
 end
-
 
 function out = J_ASV(x, dt, t_span, soc_start, soc_end, soc_max, soc_min, hotel, k_m, dayOfYear, lat, k_p)
 soc_current = soc_start;
