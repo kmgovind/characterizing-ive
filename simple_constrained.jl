@@ -26,7 +26,8 @@ dayOfYear = 180;
 lat = 35.0; # degrees
 
 function batterymodel!(dt, soc, soc_max, soc_min, hotel,k_m, vel, time, dayOfYear, lat)
-    p_in = max(0,SolarInsolation(dayOfYear, time, lat));
+    solar_panel_area = 4; # m^2
+    p_in = max(0,SolarInsolation(dayOfYear, time, lat)) * solar_panel_area;
     p_out = hotel + k_m * power(vel,3);
     soc_est = soc + (p_in - p_out);
     soc_est = soc_est * dt; # power update in Wh
