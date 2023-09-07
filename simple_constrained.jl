@@ -19,7 +19,7 @@ min_speed = 0; # min speed in m/s
 soc_max = 6.5e3; # 6.5 kWh battery capacity
 soc_min = 0;
 soc_start = soc_max/2; # start with half battery
-hotel = 10; # 10 W hotel load 
+hotel = 200; # 10 W hotel load 
 k_m = 1; # power draw from running motor gain
 
 dayOfYear = 180;

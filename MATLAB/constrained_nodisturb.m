@@ -7,9 +7,9 @@ min_speed = convvel(0, 'kts', 'm/s');
 soc_max = 6.5e3; % 6.5 kWh battery capacity
 soc_min = 0;
 % soc_start = soc_max/2; % start with half battery
-soc_start = 500;
+soc_start = 4577; % End SOC if battery gets fully charged mid-day
 soc_end = soc_start;
-hotel = 10; % 10 W hotel load
+hotel = 200; % 10 W hotel load
 k_m = 27.2032; % Power draw due to motor running gain
 
 dayOfYear = 180;
