@@ -204,64 +204,64 @@ end
     
 
 end
-dayOfYear = 0.0
-lat = 35.0 # degrees
-plot(solarTime -> SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat), 0, 24, linestyle=:dash)
-plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat) deg")
-xlabel!("Solar Time [hours, 12=noon]")
-ylabel!("Solar Insolation [kW / m2]")
-plot()
-for dayOfYear in [0, 90, 180, 270], lat in [0, 35, 60, 90]
-    plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat)o")
-end
-xlabel!("Solar Time [hours, 12=noon]")
-ylabel!("Solar Insolation [kW / m2]")
-plot()
-for dayOfYear in [0, 90, 180, 270]
-    lat = 35.0
-    plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat)o")
-end
-xlabel!("Solar Time [hours, 12=noon]")
-ylabel!("Solar Insolation [kW / m2]")
-@gif for dayOfYear = 0:5:365
-    lat = 35.0 # degrees
-    plot(solarTime -> SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat), 0, 24, linestyle=:dash, label=false)
-    plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat) deg")
-    xlabel!("Solar Time [hours, 12=noon]")
-    ylabel!("Solar Insolation [kW / m2]")
-    ylims!(-1.4, 1.4)
-end
-plot()
-for dayOfYear in [0, 90, 180, 270]
-    lat = 35.0
-    plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 3*24, label="Day $(dayOfYear), Lat: $(lat)o")
-end
-xlabel!("Solar Time [hours, 12=noon]")
-ylabel!("Solar Insolation [kW / m2]")
-dayGif = @animate for dayOfYear = 0:5:365
-# dayOfYear = 0
+# dayOfYear = 0.0
+# lat = 35.0 # degrees
+# plot(solarTime -> SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat), 0, 24, linestyle=:dash)
+# plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat) deg")
+# xlabel!("Solar Time [hours, 12=noon]")
+# ylabel!("Solar Insolation [kW / m2]")
+# plot()
+# for dayOfYear in [0, 90, 180, 270], lat in [0, 35, 60, 90]
+#     plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat)o")
+# end
+# xlabel!("Solar Time [hours, 12=noon]")
+# ylabel!("Solar Insolation [kW / m2]")
+# plot()
+# for dayOfYear in [0, 90, 180, 270]
+#     lat = 35.0
+#     plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat)o")
+# end
+# xlabel!("Solar Time [hours, 12=noon]")
+# ylabel!("Solar Insolation [kW / m2]")
+# @gif for dayOfYear = 0:5:365
+#     lat = 35.0 # degrees
+#     plot(solarTime -> SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat), 0, 24, linestyle=:dash, label=false)
+#     plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat) deg")
+#     xlabel!("Solar Time [hours, 12=noon]")
+#     ylabel!("Solar Insolation [kW / m2]")
+#     ylims!(-1.4, 1.4)
+# end
+# plot()
+# for dayOfYear in [0, 90, 180, 270]
+#     lat = 35.0
+#     plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 3*24, label="Day $(dayOfYear), Lat: $(lat)o")
+# end
+# xlabel!("Solar Time [hours, 12=noon]")
+# ylabel!("Solar Insolation [kW / m2]")
+# dayGif = @animate for dayOfYear = 0:5:365
+# # dayOfYear = 0
     
-    plots = [ begin
-    plot(solarTime -> SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat), 0, 24, linestyle=:dash, label=false)
-    plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat) deg")
-    xlabel!("Solar Time [h, 12=noon]")
-    ylabel!("Insolation [kW / m2]")
-    ylims!(-1.4, 1.4)
-        title!("Day: $(dayOfYear), Lat: $(lat)deg")
-        plot!(legend=false)
-    end for lat in [0, 30, 60, 80] ]
+#     plots = [ begin
+#     plot(solarTime -> SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat), 0, 24, linestyle=:dash, label=false)
+#     plot!(solarTime -> max(0, SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat)), 0, 24, label="Day $(dayOfYear), Lat: $(lat) deg")
+#     xlabel!("Solar Time [h, 12=noon]")
+#     ylabel!("Insolation [kW / m2]")
+#     ylims!(-1.4, 1.4)
+#         title!("Day: $(dayOfYear), Lat: $(lat)deg")
+#         plot!(legend=false)
+#     end for lat in [0, 30, 60, 80] ]
 
-plot(plots...)
-end
-gif(dayGif, "solar_insolation.gif")
-## SIMPLIFIED MODEL
+# plot(plots...)
+# end
+# gif(dayGif, "solar_insolation.gif")
+# ## SIMPLIFIED MODEL
 
-el = asin( sin(lat_rad) * sin(dec_rad) + cos(lat_rad) * cos(dec_rad) * cos(hourAngle_rad))
-z = π/2 - el
-D0 cos(z)
+# el = asin( sin(lat_rad) * sin(dec_rad) + cos(lat_rad) * cos(dec_rad) * cos(hourAngle_rad))
+# z = π/2 - el
+# D0 cos(z)
 
-# therefore cos(z) = 
-Cos[dec] Cos[hourAngle] Cos[lat] + Sin[dec] Sin[lat]
-function solar_insolation(hourAngle, lat, dec)
-    return sin(dec)*sin(lat) + cos(dec) * cos(lat) * cos(hourAngle)
-end
+# # therefore cos(z) = 
+# Cos[dec] Cos[hourAngle] Cos[lat] + Sin[dec] Sin[lat]
+# function solar_insolation(hourAngle, lat, dec)
+#     return sin(dec)*sin(lat) + cos(dec) * cos(lat) * cos(hourAngle)
+# end
