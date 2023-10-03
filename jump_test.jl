@@ -65,7 +65,7 @@ end)
 for j in 2:n
     i = j-1;
     # Compute distance travelled
-    @constraint(model, x[j] == x[i] + v[i] * (Δt * 60 * 60)); 
+    @constraint(model, x[j] == x[i] + (v[i] * 60 * 60)*Δt); 
 
     # Compute updated SOC
     soc_est = batterymodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
