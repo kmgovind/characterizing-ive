@@ -26,3 +26,7 @@ Manifest.toml
 
 # Image and Animations
 *.gif
+
+
+# Messaround Scripts
+hover.jl

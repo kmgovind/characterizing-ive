@@ -1,5 +1,4 @@
-using JuMP
-import Ipopt, Plots
+using JuMP, Ipopt, Plots, LaTeXStrings
 
 include("solar_insolation.jl");
 using .SolarInsolationModel
@@ -26,6 +25,7 @@ dayOfYear = 180;
 lat = 35.0; # degrees
 Δt = 0.1; # time step in hours
 t = 0:Δt:24;
+og_time = t;
 t = t .+ 12;
 t = t .% 24; # time over a day from noon to noon
 n = length(t);
@@ -34,16 +34,17 @@ n = length(t);
 b_0 = boat.b_max/2;
 
 function batterymodel!(boat, dayOfYear, time, lat, vel, soc, dt)
-    p_in = max(0,SolarInsolation(dayOfYear, time, lat)) * boat.panel_area * boat.panel_efficiency;
+    # Solar Insolation returns in kW
+    p_in = max(0,SolarInsolation(dayOfYear, time, lat))* 1000 * boat.panel_area * boat.panel_efficiency;
     p_out = boat.k_h + boat.k_m * (vel^3);
-    soc_est = soc + (p_in - p_out);
-    soc_est = soc_est * dt; # power update in Wh
+    soc_est = soc + (p_in - p_out)*dt; # power update in Wh
     soc_est = min(soc_est, boat.b_max); # cap charge at soc_max
     return soc_est;
 end
 
 # Create JuMP model, using Ipopt as solver
 model = Model(Ipopt.Optimizer);
+set_optimizer_attribute(model, "max_iter", 100000)
 
 @variables(model, begin
     # State variables
@@ -55,6 +56,8 @@ model = Model(Ipopt.Optimizer);
 end)
 
 # Initial Conditions
+set_start_value.(b,b_0);
+set_start_value.(v, boat.v_max);
 @constraints(model, begin
     x[1] == 0; # start at 0 position
     b[1] == b_0; # start at initial SOC 
@@ -73,4 +76,6 @@ for j in 2:n
 end
 
 @objective(model, Max, x[n]);
-optimize!(model)
+optimize!(model);
+
+include("plotting.jl");
