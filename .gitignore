@@ -26,6 +26,7 @@ Manifest.toml
 
 # Image and Animations
 *.gif
+*.png
 
 
 # Messaround Scripts

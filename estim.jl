@@ -1,4 +1,4 @@
-using JuMP, Ipopt, Plots, LaTeXStrings
+using JuMP, Ipopt, Plots, LaTeXStrings, Dates
 
 include("solar_insolation.jl");
 using .SolarInsolationModel
@@ -19,7 +19,8 @@ end
 boat = ASV_Params();
 
 # Environment Parameters
-dayOfYear = 180;
+# dayOfYear = 180;
+dayOfYear = 1;
 lat = 35.0; # degrees
 Δt = 0.1; # time step in hours
 t = 0:Δt:24;
@@ -63,9 +64,16 @@ xmax = 0;
 
 x = zeros(n);
 b = ones(n)*b_0;
-v = zeros(n);
+v = ones(n)*boat.v_max;
 
-for p2 in 1e-10:1e-10:1# loop through p2 values
+res = 1e-5;
+
+p2min = 1/(3*boat.k_m*(boat.v_max^2));
+println("p2min: ", p2min);
+
+p2min = 1e-10;
+
+for p2 in p2min:res:1# loop through p2 values
     for j in 2:n
         i = j-1;
         if i == 1 # initial conditions
@@ -75,7 +83,6 @@ for p2 in 1e-10:1e-10:1# loop through p2 values
         
         # Compute unconstrained velocity and SOC
         v[i] = sqrt(1/(3 * p2 * boat.k_m)); # removed negative sign from numerator to let p be positive
-        b[j] = batterymodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
         b_dot = powermodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
 
         if b[i] == boat.b_min
@@ -99,5 +106,48 @@ for p2 in 1e-10:1e-10:1# loop through p2 values
     end
 end
 
+p2 = pstar;
+
+for j in 2:n
+    i = j-1;
+    if i == 1 # initial conditions
+        x[i] = 0;
+        b[i] = b_0;
+    end
+    
+    # Compute unconstrained velocity and SOC
+    v[i] = sqrt(1/(3 * p2 * boat.k_m)); # removed negative sign from numerator to let p be positive
+    b_dot = powermodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
+
+    if b[i] == boat.b_min
+        if b_dot < 0
+            v[i] = zeropower!(boat, dayOfYear, t[i], lat, b[i], Δt);# solve for bdot = 0
+        end
+    elseif b[i] == boat.b_max
+        if b_dot > 0
+            v[i] = zeropower!(boat, dayOfYear, t[i], lat, b[i], Δt);# solve for bdot = 0
+        end
+    end
+
+    # Move boat
+    x[j] = x[i] + (v[i] * 60 * 60) * Δt;
+    b[j] = batterymodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
+end
+
 println("pstar: ", -pstar);
 println("xmax: ", xmax);
+
+
+plot(og_time, b,  xlabel="Time (hrs)", ylabel="SOC", title="SOC vs Time (hrs)", label=false, dpi=600);
+str = Dates.format(now(), "yyyy-mm-dd_HH-MM-SS_");
+figtitle = "fig/"*str*"soc_v_time.png";
+savefig(figtitle);
+
+plot(og_time, v,  xlabel="Time (hrs)", ylabel="Velocity", title="Velocity vs Time (hrs)", label=false, dpi=600);
+str = Dates.format(now(), "yyyy-mm-dd_HH-MM-SS_");
+figtitle = "fig/"*str*"vel_v_time.png";
+savefig(figtitle);
+
+irradiance = max.(0,SolarInsolation.(dayOfYear, t, lat));
+plot(og_time, irradiance, label=false, xlabel="Time (hrs)", ylabel="Irradiance (kW/m^2)", dpi=600)
+savefig("fig/irradiance_v_time.png");
