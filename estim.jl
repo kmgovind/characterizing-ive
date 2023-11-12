@@ -8,7 +8,7 @@ Base.@kwdef struct ASV_Params
     b_max::Float32 = 6500; # max soc in Wh
     b_min::Float32 = 0; # min soc in Wh
     panel_area::Float32 = 4; # m^2
-    panel_efficiency::Float32 = 1; # 25% panel efficiency
+    panel_efficiency::Float32 = 0.25; # 25% panel efficiency
     v_max::Float32 = 2.315; # max boat speed in m/s 
     v_min::Float32 = 0; # min boat speed in m/s
 
@@ -71,7 +71,7 @@ res = 1e-5;
 p2min = 1/(3*boat.k_m*(boat.v_max^2));
 println("p2min: ", p2min);
 
-p2min = 1e-10;
+# p2min = 1e-10;
 
 for p2 in p2min:res:1# loop through p2 values
     for j in 2:n
@@ -85,11 +85,11 @@ for p2 in p2min:res:1# loop through p2 values
         v[i] = sqrt(1/(3 * p2 * boat.k_m)); # removed negative sign from numerator to let p be positive
         b_dot = powermodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
 
-        if b[i] == boat.b_min
+        if b[i] <= boat.b_min
             if b_dot < 0
                 v[i] = zeropower!(boat, dayOfYear, t[i], lat, b[i], Δt);# solve for bdot = 0
             end
-        elseif b[i] == boat.b_max
+        elseif b[i] >= boat.b_max
             if b_dot > 0
                 v[i] = zeropower!(boat, dayOfYear, t[i], lat, b[i], Δt);# solve for bdot = 0
             end

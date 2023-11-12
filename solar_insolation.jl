@@ -204,6 +204,7 @@ end
     
 
 end
+
 # dayOfYear = 0.0
 # lat = 35.0 # degrees
 # plot(solarTime -> SolarInsolationModel.SolarInsolation(dayOfYear, solarTime, lat), 0, 24, linestyle=:dash)

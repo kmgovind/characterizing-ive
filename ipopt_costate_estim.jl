@@ -8,7 +8,7 @@ Base.@kwdef struct ASV_Params
     b_max::Float32 = 6500; # max soc in Wh
     b_min::Float32 = 0; # min soc in Wh
     panel_area::Float32 = 4; # m^2
-    panel_efficiency::Float32 = 1; # 25% panel efficiency
+    panel_efficiency::Float32 = 0.25; # 25% panel efficiency
     v_max::Float32 = 2.315; # max boat speed in m/s 
     v_min::Float32 = 0; # min boat speed in m/s
 
@@ -82,7 +82,7 @@ end)
 # Initial Conditions
 set_start_value.(b, b_0);
 set_start_value.(v, boat.v_max);
-set_start_value.(p2, 1);
+set_start_value.(p2, p2min);
 @constraints(model, begin
     x[1] == 0; # start at 0 position
     b[1] == b_0; # start at initial SOC 
