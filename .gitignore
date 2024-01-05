@@ -28,6 +28,8 @@ Manifest.toml
 *.gif
 *.png
 
-
 # Messaround Scripts
 hover.jl
+
+# VSCode config files
+.json
