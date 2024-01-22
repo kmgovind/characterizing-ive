@@ -30,6 +30,10 @@ Manifest.toml
 
 # Messaround Scripts
 hover.jl
+ncdf_test.ipynb
+
+# Data Files
+ERA5_wind_Raleigh_202310.nc
 
 # VSCode config files
 .json
