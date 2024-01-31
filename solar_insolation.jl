@@ -253,6 +253,10 @@ end
 #     end for lat in [0, 30, 60, 80] ]
 
 # plot(plots...)
+
+#         if dayOfYear == 180
+#             savefig("fig/solarinsolation_day180.png")
+#         end
 # end
 # gif(dayGif, "solar_insolation.gif")
 # ## SIMPLIFIED MODEL
