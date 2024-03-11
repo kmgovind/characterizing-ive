@@ -36,12 +36,12 @@ using .SolarInsolationModel
 # Vehicle Parameters
 Base.@kwdef struct ASV_Params
     # b_max::Float32 = 6500; # max soc in Wh
-    b_max::Float32 = 10000;
+    b_max::Float32 = 6500;
     b_min::Float32 = 0; # min soc in Wh
     panel_area::Float32 = 4; # m^2
     panel_efficiency::Float32 = 0.25; # 25% panel efficiency
-    # v_max::Float32 = 2.315; # max boat speed in m/s 
-    v_max::Float32 = 5;
+    v_max::Float32 = 2.315; # max boat speed in m/s 
+    # v_max::Float32 = 5;
     v_min::Float32 = 0; # min boat speed in m/s
 
     k_h::Float32 = 10; # Hotel Load
@@ -90,57 +90,6 @@ function zeropower!(boat, dayOfYear, time, lat, soc, dt)
     end
     return vel;
 end
-
-# model = Model(NLopt.Optimizer)
-# @variables(model, begin
-#     x[1:n] # Position
-#     boat.v_min ≤ v[1:n] ≤ boat.v_max # Velocity
-#     b[1:n] # State of Charge
-# end)
-
-# # Initial Conditions
-# set_start_value.(v, boat.v_max/2);
-# set_start_value.(b, b_0);
-# set_start_value.(x, 0);
-# @NLobjective(model, Max, x[n])
-# @NLconstraints(model, begin
-#     boat.b_min <= b[1:n]
-#     b[1:n] <= boat.b_max
-# end)
-
-# # Propogate dynamics
-# for j in 2:n
-#     i = j-1;
-
-#     # Compute unconstrained velocity and SOC
-#     b_dot = powermodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
-
-#     # Impose Boundary Conditions
-#     # if b[i] <= lcbf[i]
-#     #     # global v[i] = 0;
-#     #     @constraint(model, v[i] == 0);
-#     # elseif 0 < (b_temp - lcbf[i]) < δ
-#     #     v_temp = (b_temp - lcbf[i])/δ * v_temp + (1 - (b_temp - lcbf[i])/δ) * boat.v_min;
-#     #     @constraint(model, v[i] == v_temp);
-#     # elseif b_temp >= ucbf[i]
-#     #     # global v[i] = boat.v_max;
-#     #     @constraint(model, v[i] == boat.v_max);
-#     # elseif 0 < (ucbf[i] - b_temp) < δ
-#     #     v_temp = (ucbf[i] - b_temp)/δ * v_temp + (1 - (ucbf[i] - b_temp)/δ) * boat.v_max;
-#     #     @constraint(model, v[i] == v_temp);
-#     # end
-
-#     # Move boat
-#     @NLconstraint(model, x[j] == x[i] + (v[i] * 60 * 60) * Δt);
-#     # global x[j] = x[i] + (v[i] * 60 * 60) * Δt;
-#     soc_est = batterymodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
-#     # global b[j] = batterymodel!(boat, dayOfYear, t[i], lat, v[i], b[i], Δt);
-#     # global v[j] = v[i];
-#     @NLconstraint(model, b[j] == soc_est);
-
-# end
-
-# JuMP.optimize!(model)
 
 model = Model(Ipopt.Optimizer)
 # set_optimizer_attribute(model, "max_iter", 10000);
