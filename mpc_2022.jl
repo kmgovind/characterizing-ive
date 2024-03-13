@@ -48,7 +48,7 @@ n = length(t);
 
 # Initial Conditions
 b_0 = boat.b_max/2;
-num_iters = 1;
+num_iters = 14;
 
 
 function mpc_opt!(boat, dayOfYear, t, lat, Δt)
@@ -105,7 +105,7 @@ function mpc_opt!(boat, dayOfYear, t, lat, Δt)
 
 
     @objective(model, Max, x_est);
-    # set_silent(model);
+    set_silent(model);
     optimize!(model);
     return value.(v[1]);
 end
