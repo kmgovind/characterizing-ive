@@ -48,10 +48,10 @@ n = length(t);
 
 # Initial Conditions
 b_0 = boat.b_max/2;
-num_iters = 14;
+num_iters = 363;
 
 
-function mpc_opt!(boat, dayOfYear, t, lat, Δt)
+function mpc_opt!(boat, dayOfYear, t, lat, Δt, b_cur)
     model = Model(Ipopt.Optimizer);
     # set_optimizer_attribute(model, "max_iter", 10000);
     @variables(model, begin
@@ -69,7 +69,7 @@ function mpc_opt!(boat, dayOfYear, t, lat, Δt)
     set_start_value.(x, 0);
     @constraints(model, begin
         x[1] == 0
-        b[1] == b_0
+        b[1] == b_cur
         boat.b_min .<= b[1:n] .<= boat.b_max
     end);
 
@@ -133,7 +133,7 @@ for dayOfYear = 1:1:num_iters
     for j in 2:n
         i = j-1;
         t_adj = t[i]:Δt:t[i]+24;
-        global v[i] = mpc_opt!(boat, dayOfYear, floor(Int, i/10), lat, Δt);
+        global v[i] = mpc_opt!(boat, dayOfYear, floor(Int, i/10), lat, Δt, b[i]);
 
         # move boat
         global x[j] = x[i] + (v[i] * 60 * 60) * Δt;

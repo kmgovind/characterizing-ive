@@ -52,7 +52,7 @@ function batterymodelactual!(boat, dayOfYear, time, lat, vel, soc, dt)
     return soc_est;
 end
 
-function mpc_opt!(boat, dayOfYear, t, lat, Δt)
+function mpc_opt!(boat, dayOfYear, t, lat, Δt, b_cur)
     model = Model(Ipopt.Optimizer);
     # set_optimizer_attribute(model, "max_iter", 10000);
     @variables(model, begin
@@ -70,7 +70,7 @@ function mpc_opt!(boat, dayOfYear, t, lat, Δt)
     set_start_value.(x, 0);
     @constraints(model, begin
         x[1] == 0
-        b[1] == b_0
+        b[1] == b_cur
         boat.b_min .<= b[1:n] .<= boat.b_max
     end);
 
@@ -122,7 +122,7 @@ for dayOfYear = 1:1:num_iters
     for j in 2:n
         i = j-1;
         t_adj = t[i]:Δt:t[i]+24;
-        global v[i] = mpc_opt!(boat, dayOfYear, t_adj, lat, Δt);
+        global v[i] = mpc_opt!(boat, dayOfYear, t_adj, lat, Δt, b[i]);
 
         # move boat
         global x[j] = x[i] + (v[i] * 60 * 60) * Δt;
@@ -194,4 +194,4 @@ end
 # end 
 # gif(simulation, "mpc.gif")
 
-jldsave("mpc_comp_$(num_iters).jld2"; x_list_mpc, b_list_mpc, v_list_mpc, og_time, boat, lat, Δt);
+jldsave("mpc_comp_new_$(num_iters).jld2"; x_list_mpc, b_list_mpc, v_list_mpc, og_time, boat, lat, Δt);
